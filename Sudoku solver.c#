@@ -1,0 +1,70 @@
+public class Solution 
+{
+    private int[] rows = new int[9];
+    private int[] cols = new int[9];
+    private int[] boxes = new int[9];
+    
+    public void SolveSudoku(char[][] board) 
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (board[i][j] != '.')
+                {
+                    int num = board[i][j] - '1';
+                    int mask = 1 << num;
+                    int boxIndex = (i / 3) * 3 + (j / 3);
+                    
+                    rows[i] |= mask;
+                    cols[j] |= mask;
+                    boxes[boxIndex] |= mask;
+                }
+            }
+        }
+        
+        Solve(board, 0);
+    }
+    
+    private bool Solve(char[][] board, int pos)
+    {
+        if (pos == 81) return true;
+        
+        int row = pos / 9;
+        int col = pos % 9;
+        
+        if (board[row][col] != '.') 
+        {
+            return Solve(board, pos + 1);
+        }
+        
+        int boxIndex = (row / 3) * 3 + (col / 3);
+        
+        for (int n = 0; n < 9; n++)
+        {
+            int mask = 1 << n;
+            
+            if ((rows[row] & mask) == 0 &&
+                (cols[col] & mask) == 0 &&
+                (boxes[boxIndex] & mask) == 0)
+            {
+                board[row][col] = (char)('1' + n);
+                rows[row] |= mask;
+                cols[col] |= mask;
+                boxes[boxIndex] |= mask;
+                
+                if (Solve(board, pos + 1))
+                {
+                    return true;
+                }
+                
+                board[row][col] = '.';
+                rows[row] &= ~mask;
+                cols[col] &= ~mask;
+                boxes[boxIndex] &= ~mask;
+            }
+        }
+        
+        return false;
+    }
+}
