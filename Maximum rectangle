@@ -1,0 +1,58 @@
+class Solution {
+public:
+    int MAH(vector<int> v) {
+
+        stack<pair<int,int>> st;
+        vector<int> indexNSL;
+        for(int i = 0; i < v.size(); i++) {
+            while(!st.empty() && st.top().first >= v[i]) {
+                st.pop();
+            }
+            if(st.empty()) indexNSL.push_back(-1);
+            else indexNSL.push_back(st.top().second);
+            st.push({v[i], i});
+        }
+
+        st = stack<pair<int,int>> ();
+        vector<int> indexNSR;
+        for(int i = v.size()-1; i >= 0; i--) {
+            while(!st.empty() && st.top().first >= v[i]) {
+                st.pop();
+            }
+            if(st.empty()) indexNSR.push_back(v.size());
+            else indexNSR.push_back(st.top().second);
+            st.push({v[i],i});
+        }
+        reverse(indexNSR.begin(), indexNSR.end());
+
+        vector<int> width;
+        for(int i = 0; i < v.size(); i++) {
+            width.push_back((indexNSR[i] - indexNSL[i]) - 1);
+        }
+
+        int maxArea = 0;
+        for(int i = 0; i < v.size(); i++) {
+            int area = v[i] * width[i];
+            maxArea = max(area,maxArea);
+        }
+
+        return maxArea;
+    }
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        int rows = matrix.size();
+        int cols = matrix[0].size();
+
+        vector<int> v(cols,0);
+        int maxRect = 0;
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                if(matrix[i][j] == '0') v[j] = 0;
+                else v[j] = v[j] + 1;
+            }
+
+            maxRect = max(maxRect, MAH(v));
+        }
+
+        return maxRect;
+    }
+};
