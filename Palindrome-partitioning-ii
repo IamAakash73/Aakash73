@@ -1,0 +1,86 @@
+// Method 2, RECURSION + DP + PRECOMPUTE PALINDROME, TIME COMPLEXITY O(N^2), SPACE COMPLEXITY O(N^2)..
+class Solution {
+private:
+    int dp[2001];
+    int pal[2001][2001];
+
+    bool isPalindrome(const string& str, int i, int j){
+        if(pal[i][j] != -1) return pal[i][j];
+
+        int left = i, right = j;
+
+        while(left < right){
+            if(str[left] != str[right]) return pal[i][j] = false;
+
+            left++;
+            right--;
+        }
+
+        return pal[i][j] = true;
+    }
+    int solve(const string& str, int start, const int& end){
+        if( (start > end) || (isPalindrome(str, start, end)) ) return 0;
+
+        if(dp[start] != -1) return dp[start];
+
+        int ans = 1e9;
+
+        for(int i=start; i<end; i++){
+
+            // Through this we are checking is current partition is valid palindrome or not..
+            if(isPalindrome(str, start, i)){
+                int nextPartition = 1 + solve(str, i+1, end);
+                ans = min(ans, nextPartition);
+            }
+        }
+
+        return dp[start] = ans;
+    }
+public:
+    int minCut(string s) {
+        memset(dp, -1, sizeof(dp));
+        memset(pal, -1, sizeof(pal));
+
+        return solve(s, 0, s.length()-1);
+    }
+};
+
+// Method 1, RECURSION + DP only, TIME COMPLEXITY O(N^3), SPACE COMPLEXITY O(N)..
+// class Solution {
+// private:
+//     int dp[2001];
+//     bool isPalindrome(const string& str, int i, int j){
+//         while(i < j){
+
+//             if(str[i] != str[j]) return false;
+
+//             i++; 
+//             j--;
+//         }
+
+//         return true;
+//     }
+//     int solve(const string& str, int start, const int& end){
+//         if( (start > end) || (isPalindrome(str, start, end)) ) return 0;
+
+//         if(dp[start] != -1) return dp[start];
+
+//         int ans = 1e9;
+
+//         for(int i=start; i<end; i++){
+
+//             // Through this we are checking is current partition is valid palindrome or not..
+//             if(isPalindrome(str, start, i)){
+//                 int nextPartition = 1 + solve(str, i+1, end);
+//                 ans = min(ans, nextPartition);
+//             }
+//         }
+
+//         return dp[start] = ans;
+//     }
+// public:
+//     int minCut(string s) {
+//         memset(dp, -1, sizeof(dp));
+//         return solve(s, 0, s.length()-1);
+//     }
+// };
